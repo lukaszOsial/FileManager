@@ -1,8 +1,10 @@
 package fileManager;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -19,7 +21,8 @@ public class FileManager {
 				System.out.println("2. Create new file");
 				System.out.println("3. Delete the file");
 				System.out.println("4. Read the file");
-				System.out.println("5. Exit");
+				System.out.println("5. Add text to file");
+				System.out.println("6. Exit");
 				System.out.println("Select option: ");
 
 				int choice = scanner.nextInt();
@@ -43,6 +46,13 @@ public class FileManager {
 					readFile(currentDir, fileToRead);
 				}
 				case 5 -> {
+					System.out.println("Enter the file name to read: ");
+					String fileToRead = scanner.nextLine();
+					System.out.println("Enter text to add the file: ");
+					String textToAdd = scanner.nextLine();
+					addTextToFile(currentDir, fileToRead, textToAdd);
+				}
+				case 6 -> {
 					System.out.println("Exit from file manager");
 					return;
 				}
@@ -58,7 +68,7 @@ public class FileManager {
 		File dir = new File(directory);
 		File[] files = dir.listFiles();
 
-		if (files != null) {
+		if (files != null && files.length > 0) {
 			System.out.println("Files in catalog " + directory + ":");
 			for (File file : files) {
 				System.out.println((file.isDirectory() ? "[DIR] " : "[FILE]") + file.getName());
@@ -74,7 +84,7 @@ public class FileManager {
 			if (file.createNewFile()) {
 				System.out.println("File created: " + fileName);
 			} else {
-				System.out.println("File already exists: ");
+				System.out.println("File already exists: " + fileName);
 			}
 		} catch (IOException e) {
 			System.out.println("Error creating file: " + e.getMessage());
@@ -97,8 +107,17 @@ public class FileManager {
 			while ((line = br.readLine()) != null) {
 				System.out.println(line);
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			System.out.println("Error reading file: " + e.getMessage());
+		}
+	}
+
+	private static void addTextToFile(String directory, String fileName, String textToAdd) {
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(new File(directory, fileName), true))) {
+			bw.write(textToAdd);
+			bw.newLine();
+		} catch (IOException e) {
+			System.out.println("Error adding text to file: " + e.getMessage());
 		}
 	}
 
